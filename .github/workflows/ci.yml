@@ -1,0 +1,21 @@
+name: CI
+
+on: [push, workflow_dispatch]
+
+jobs:
+  Build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up
+        uses: actions/setup-python@v5
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Test
+        run: ./.github/run.sh --no-lint
+      - name: Lint
+        run: ./.github/run.sh --no-test
