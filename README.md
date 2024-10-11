@@ -4,7 +4,7 @@ Python solutions for [Codewars](https://www.codewars.com/dashboard) Katas.
 
 ## Searching for Katas
 
-https://www.codewars.com/kata/search/python?q=&r%5B%5D=-5&r%5B%5D=-4&xids=completed&beta=false&order_by=popularity%20desc
+https://www.codewars.com/kata/search/python?q=&r%5B%5D=-4&xids=completed&beta=false&order_by=satisfaction_percent%20desc%2Ctotal_completed%20desc
 
 ## Running tests
 ```
