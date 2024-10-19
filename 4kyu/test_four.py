@@ -1,4 +1,5 @@
 import pytest
+from _pytest.fixtures import FixtureRequest
 import four
 
 
@@ -100,3 +101,200 @@ def test_get_pins(observed: str, expected: list[str]) -> None:
 )
 def test_sum_of_intervals(intervals: list[tuple[int, int]], expected: int) -> None:
     assert four.sum_of_intervals(intervals) == expected
+
+
+@pytest.mark.parametrize(
+    "triplets, expected",
+    [
+        (
+            [
+                ["t", "u", "p"],
+                ["w", "h", "i"],
+                ["t", "s", "u"],
+                ["a", "t", "s"],
+                ["h", "a", "p"],
+                ["t", "i", "s"],
+                ["w", "h", "s"],
+            ],
+            "whatisup",
+        ),
+        (
+            [
+                ["t", "u", "p"],
+                ["w", "h", "i"],
+                ["t", "s", "u"],
+                ["a", "t", "s"],
+                ["h", "a", "p"],
+                ["t", "i", "s"],
+            ],
+            "whatisup",
+        ),
+    ],
+)
+def test_recover_secret(triplets: list[list[str]], expected: str) -> None:
+    assert four.recover_secret(triplets) == expected
+
+
+@pytest.mark.parametrize(
+    "pyramid, expected",
+    [
+        ([[3], [7, 4], [2, 4, 6], [8, 5, 9, 3]], 23),
+        (
+            [
+                [75],
+                [95, 64],
+                [17, 47, 82],
+                [18, 35, 87, 10],
+                [20, 4, 82, 47, 65],
+                [19, 1, 23, 75, 3, 34],
+                [88, 2, 77, 73, 7, 63, 67],
+                [99, 65, 4, 28, 6, 16, 70, 92],
+                [41, 41, 26, 56, 83, 40, 80, 70, 33],
+                [41, 48, 72, 33, 47, 32, 37, 16, 94, 29],
+                [53, 71, 44, 65, 25, 43, 91, 52, 97, 51, 14],
+                [70, 11, 33, 28, 77, 73, 17, 78, 39, 68, 17, 57],
+                [91, 71, 52, 38, 17, 14, 91, 43, 58, 50, 27, 29, 48],
+                [63, 66, 4, 68, 89, 53, 67, 30, 73, 16, 69, 87, 40, 31],
+                [4, 62, 98, 27, 23, 9, 70, 98, 73, 93, 38, 53, 60, 4, 23],
+            ],
+            1074,
+        ),
+    ],
+)
+def test_longest_slide_down(pyramid: list[list[int]], expected: int) -> None:
+    assert four.longest_slide_down(pyramid) == expected
+
+
+def test_longest_slide_down_2(request: FixtureRequest) -> None:
+    with open(request.path.parent / "data" / "pyramid.txt") as f:
+        pyramid = [[int(s) for s in line.split()] for line in f.readlines()]
+
+    assert four.longest_slide_down(pyramid) == 7273
+
+
+@pytest.mark.parametrize(
+    "num, expected",
+    [
+        ("one", 1),
+        ("twenty", 20),
+        ("two hundred forty-six", 246),
+        ("seven hundred eighty-three thousand nine hundred and nineteen", 783919),
+        ("seven hundred thousand", 700000),
+    ],
+)
+def test_parse_int(num: str, expected: int) -> None:
+    assert four.parse_int(num) == expected
+
+
+@pytest.mark.parametrize(
+    "n, expected",
+    [
+        (907, 790),
+        (531, 513),
+        (135, -1),
+        (2071, 2017),
+        (414, 144),
+        (123456798, 123456789),
+        (123456789, -1),
+        (1234567908, 1234567890),
+        (9, -1),
+        (135, -1),
+        (1027, -1),
+        (1207, 1072),
+        (29009, 20990),
+        (158262180741011122456788, 158262180740887654221111),
+        (12875531304666, 12875531066643),
+        (400104, 400041),
+        (703037, 700733),
+    ],
+)
+def test_next_smaller(n: int, expected: int) -> None:
+    assert four.next_smaller(n) == expected
+
+
+@pytest.mark.parametrize(
+    "n, expected",
+    [
+        (5, [3, 4]),
+        (8, None),
+    ],
+)
+def test_decompose(n: int, expected: list[int]) -> None:
+    assert four.decompose(n) == expected
+
+
+@pytest.mark.parametrize(
+    "maze, expected",
+    [
+        ([".W.", ".W.", "..."], 4),
+        ([".W.", ".W.", "W.."], False),
+        (["......", "......", "......", "......", "......", "......"], 10),
+        (["......", "......", "......", "......", ".....W", "....W."], False),
+        (
+            [
+                ".......WW.",
+                ".W.W..W..W",
+                "W........W",
+                ".....W.W..",
+                "....W...W.",
+                ".....W....",
+                ".W..W..W..",
+                "..W.....WW",
+                ".......WW.",
+                "WW........",
+            ],
+            18,
+        ),
+        (
+            [
+                "...........",
+                "......WW..W",
+                ".......WW..",
+                ".WW...W....",
+                ".........W.",
+                "...W..W.W..",
+                ".....W....W",
+                "W..........",
+                "....WWW....",
+                "...WW...W.W",
+                ".....W.W...",
+            ],
+            20,
+        ),
+        (
+            [
+                "..W.....W.W",
+                "...W.W.....",
+                "W...W.W....",
+                "W..........",
+                "..W......WW",
+                "........WWW",
+                ".WW....W.W.",
+                "..W..WW..WW",
+                ".WW.W......",
+                "....W..W...",
+                ".WW....W...",
+            ],
+            24,
+        ),
+    ],
+)
+def test_path_finder(maze: list[str], expected: int) -> None:
+    assert four.path_finder("\n".join(maze)) == expected
+    assert four.path_finder2("\n".join(maze)) == expected
+
+
+@pytest.mark.parametrize(
+    "money, coins, expected",
+    [
+        (0, [], 1),
+        (4, [1, 2], 3),
+        (10, [5, 2, 3], 4),
+        (11, [5, 7], 0),
+        (0, [1, 2], 1),
+        (4040, [419, 194, 385, 12], 42),
+        (2739, [144, 50, 220, 312, 2, 185], 12767),
+    ],
+)
+def test_count_change(money: int, coins: list[int], expected: int) -> None:
+    assert four.count_change(money, coins) == expected

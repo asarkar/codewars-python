@@ -50,3 +50,19 @@ def test_make_readable(seconds: int, time: str) -> None:
 )
 def test_rgb(r: int, g: int, b: int, expected: str) -> None:
     assert five.rgb(r, g, b) == expected
+
+
+@pytest.mark.parametrize(
+    "bits, expected",
+    [
+        ("1110111", "--"),
+        ("11111100111111", "--"),
+        ("01110", "."),
+        (
+            "1100110011001100000011000000111111001100111111001111110000000000000011001111110011111100111111000000110011001111110000001111110011001100000011",
+            ".... . -.--   .--- ..- -.. .",
+        ),
+    ],
+)
+def test_decode_bits(bits: str, expected: str) -> None:
+    assert five.decode_bits(bits) == expected
