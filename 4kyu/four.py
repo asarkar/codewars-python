@@ -3,6 +3,7 @@ import heapq
 import itertools
 import math
 from collections import deque, defaultdict
+from typing import Any
 
 import numpy as np
 
@@ -600,3 +601,270 @@ def count_change(money: int, coins: list[int]) -> int:
                 dp[i][j] += dp[i][j - 1]
 
     return dp[-1][-1]
+
+
+# Shortest Knight Path
+# #algorithms
+#
+# Given two different positions on a chess board, find the least number of moves it would take a knight
+# to get from one to the other. The positions will be passed as two arguments in algebraic notation.
+# For example, knight("a3", "b5") should return 1.
+#
+# The knight is not allowed to move off the board. The board is 8x8.
+#
+# ANSWER: While we can solve this by BFS, we will use A* algorithm. Note that A* is just Dijkstra's algorithm
+# with the distance function modified. In this case, we will use the Manhattan distance of a cell from the target
+# _divided by three_ as the heuristic. We divide by three because x and y change by a total of 3 in each move.
+def knight(p1: str, p2: str) -> int:
+    def coord(square: str) -> tuple[int, int]:
+        return ord(square[0]) - ord("a"), int(square[1]) - 1
+
+    start, end = coord(p1), coord(p2)
+    n = 8
+    to_visit = [(0, start)]
+    steps = {start: 0}
+
+    while to_visit:
+        _, square = heapq.heappop(to_visit)
+        curr_step = steps[square]
+        if square == end:
+            return curr_step
+        for d in (-2, -1), (-2, 1), (2, -1), (2, 1), (-1, -2), (1, -2), (-1, 2), (1, 2):
+            nxt_row = square[0] + d[0]
+            nxt_col = square[1] + d[1]
+            next_step = curr_step + 1
+            if (
+                0 <= nxt_row < n
+                and 0 <= nxt_col < n
+                and (
+                    (nxt_row, nxt_col) not in steps
+                    or next_step < steps[(nxt_row, nxt_col)]
+                )
+            ):
+                steps[(nxt_row, nxt_col)] = next_step
+                heuristic = (abs(end[0] - nxt_row) + abs(end[1] - nxt_col)) // 3
+                dist = next_step + heuristic
+                heapq.heappush(to_visit, (dist, (nxt_row, nxt_col)))
+
+    return -1
+
+
+# Smallest possible sum
+# #algorithms #mathematics #arrays
+#
+# Given an array X of positive integers, its elements are to be transformed
+# by running the following operation on them as many times as required:
+#
+# if X[i] > X[j] then X[i] = X[i] - X[j]
+#
+# When no more transformations are possible, return its sum ("smallest possible sum").
+def smallest_sum(lst: list[int]) -> int:
+    return math.gcd(*lst) * len(lst)
+
+
+# All Balanced Parentheses
+# #algorithms
+#
+# Write a function which makes a list of strings representing all of the ways you can balance n pairs of parentheses.
+#
+# Examples
+# balanced_parens(0) => [""]
+# balanced_parens(1) => ["()"]
+# balanced_parens(2) => ["()()","(())"]
+# balanced_parens(3) => ["()()()","(())()","()(())","(()())","((()))"]
+def balanced_parens(n: int) -> list[str]:
+    def loop(left: int, right: int, way: list[str]) -> None:
+        if left == right == 0:
+            ways.append("".join(way))
+            return
+        if left > 0:
+            way.append("(")
+            loop(left - 1, right, way)
+            way.pop()
+        if right > left:
+            way.append(")")
+            loop(left, right - 1, way)
+            way.pop()
+
+    ways: list[str] = []
+    loop(n, n, [])
+    return ways
+
+
+# Boggle Word Checker
+# #arrays #recursion #puzzles
+#
+# Write a function that determines whether a string is a valid guess in a Boggle board,
+# as per the rules of Boggle. A Boggle board is a 2D array of individual characters, e.g.:
+# [ ["I","L","A","W"],
+#   ["B","N","G","E"],
+#   ["I","U","A","O"],
+#   ["A","S","R","L"] ]
+# Valid guesses are strings which can be formed by connecting adjacent cells
+# (horizontally, vertically, or diagonally) without re-using any previously used cells.
+#
+# For example, in the above board "BINGO", "LINGO", and "ILNBIA" would all be valid guesses,
+# while "BUNGIE", "BINS", and "SINUS" would not.
+#
+# Your function should take two arguments (a 2D array and a string) and return true or false
+# depending on whether the string is found in the array as per Boggle rules.
+def find_word(board: list[list[str]], word: str) -> bool:
+    def search(curr: tuple[int, int], i: int) -> bool:
+        if i == len(word) - 1:
+            return True
+        shift = (-1, 0, 1)
+        grid[curr[0]][curr[1]] = ""
+        for dx, dy in itertools.product(shift, repeat=2):
+            row = curr[0] + dx
+            col = curr[1] + dy
+            if (
+                0 <= row < len(grid)
+                and 0 <= col < len(grid[row])
+                and grid[row][col] == word[i + 1]
+                and search((row, col), i + 1)
+            ):
+                return True
+
+        grid[curr[0]][curr[1]] = word[i]
+        return False
+
+    # Make a copy of the board since the same board is used for multiple tests.
+    grid = [[*r] for r in board]
+    for r in range(len(grid)):
+        for c in range(len(grid[r])):
+            if grid[r][c] == word[0] and search((r, c), 0):
+                return True
+    return False
+
+
+# Simple Fun #159: Middle Permutation
+# #puzzles
+#
+# You are given a string s. Every letter in s appears once.
+#
+# Consider all strings formed by rearranging the letters in s. After ordering these strings in dictionary order,
+# return the middle term. (If the sequence has a even length n, define its middle term to be the (n/2)th term.)
+#
+# Example
+# For s = "abc", the result should be "bac".
+#
+#  The permutations in order are: "abc", "acb", "bac", "bca", "cab", "cba" So, The middle term is "bac".
+def middle_permutation(s: str) -> str:
+    def loop(t: list[str], start: int, num_comb: int) -> str:
+        """
+        :param t: Sorted input sequence
+        :param start: If all possible permutations of the input were in sorted order,
+            the index of the permutation to start this iteration from. Starts from 1
+        :param num_comb: Number of permutations with each letter at the beginning of a word.
+            Example: t=['a','b','c'] - There are 2 combinations each beginning with 'a', 'b', and 'c'
+
+        :returns: The target sequence
+        """
+        n = len(t)
+        if n == 1:
+            return t.pop()
+        if start == target:
+            return "".join(t)
+        # Number of combinations to skip that can't contain the target combination.
+        # Example: t=['a','b','c'], start=1, target=3, we can skip the first 2 combinations beginning with 'a'.
+        # Mathematically, we are looking for the greatest k such that start + k * num_comb <= target.
+        k = (target - start) // num_comb
+        return t.pop(k) + loop(t, start + num_comb * k, num_comb // (n - 1))
+
+    n = len(s)
+    x = math.factorial(n)
+    target = x // 2
+    return loop(sorted(s), 1, x // n)
+
+
+# https://peps.python.org/pep-0695/#generic-type-alias
+# Python 3.12 onwards
+type RecursiveList = Any | list[RecursiveList]
+
+
+# Nesting Structure Comparison
+# #arrays #algorithms
+#
+# Complete the function/method (depending on the language) to return true/True when its argument is an array
+# that has the same nesting structures and same corresponding length of nested arrays as the first array.
+def same_structure_as(this: RecursiveList, that: RecursiveList) -> bool:
+    if isinstance(this, list) and isinstance(that, list):
+        return len(this) == len(that) and all(
+            same_structure_as(x, y) for x, y in zip(this, that)
+        )
+    return not isinstance(this, list) and not isinstance(that, list)
+
+
+# Count ones in a segment
+# #binary #performance #algorithms
+#
+# Given two numbers: 'left' and 'right' (1 <= 'left' <= 'right' <= 200000000000000), return sum of
+# all '1' occurrences in binary representations of numbers between 'left' and 'right' (including both)
+#
+# Example:
+# countOnes 4 7 should return 8, because:
+# 4(dec) = 100(bin), which adds 1 to the result.
+# 5(dec) = 101(bin), which adds 2 to the result.
+# 6(dec) = 110(bin), which adds 2 to the result.
+# 7(dec) = 111(bin), which adds 3 to the result.
+# So finally result equals 8.
+# WARNING: Segment may contain billions of elements, to pass this kata, your solution cannot iterate
+# through all the numbers in the segment!
+#
+# ANSWER: Let's try to find a pattern:
+# The numbers below 2^1 are:
+#   0
+#   1
+# To get the numbers below 2^2, we clone the above numbers, and put 0s before the first half of numbers
+# and 1s before the second half of numbers.
+#   00
+#   01
+#   10
+#   11
+# Let f(n) be the number of 1s _until_ 2^n where n >= 1. Since we clone the numbers from the previous step,
+# and then prepend 1s to half of them, f(n) = f(n-1) + 2^(n-1). The 2nd factor comes from the fact that
+# there are 2^n numbers from 0 _until_ 2^n, and we append 1 to half of them.
+# f(n) = 2 * f(n-1) + 2^(n-1)
+# 	   = 2 * 2 * f(n-2) + 2 * 2^(n-2) + 2^(n-1)  # Expanding f(n-1)
+# 	   = 2 * 2 * 2 * f(n-3) + 2 * 2 * 2^(n-3) + 2 * 2^(n-2) + 2^(n-1)  # Expanding f(n-2)
+# 	   = 2^(n-1) + (n-1) * 2^(n-1)  # When i=n-1, f(1)=1
+# 	   = n * 2^(n-1)
+#
+# Now let's use the above formula to find the number of 1s from 0 to 12, both included.
+#         -a-
+# 1  →  |0001|
+# 2  →  |0010|
+# 3  →  |0011|
+# 4  →  |0100|
+# 5  →  |0101|
+# 6  →  |0110|
+# 7  →  |0111|
+#       -c- -b-
+# 8  →  |1|000|
+# 9  →  |1|001|
+# 10 →  |1|010|
+# 11 →  |1|011|
+# 12 →  |1|100|
+#
+# The greatest power of 2 that is not greater than 12 is 3, because 2^3 (=8) <= 12.
+# We can find the number of 1s from 0 till 7 using the above formula. -- Call this 'a' --
+# Notice that number 8 onwards, the last 3 bits form a series that we have seen before,
+# which is 000 (=0), 001 (=1), ..., 100 (=4). Thus, we can calculate the number of 1s
+# from 0 till 4 using a recursive call. -- Call this 'b' --
+# The first bit from 8 till 12 is 1; -- call this 'c' --
+# The answer is a+b+c.
+#
+# Time Complexity: Since each time n is reduced by the closest power of 2, the algorithm
+# converges extremely quickly, and runs in almost O(1) time.
+def count_ones(left: int, right: int) -> int:
+    def count1s(n: int) -> int:
+        if n <= 1:
+            return n
+        x = int(math.log2(n))
+        y = int(2 ** (x - 1))
+        a = x * y
+        b = count1s(n - 2 * y)
+        c = n - 2 * y + 1
+        return a + b + c
+
+    return count1s(right) - count1s(left - 1)

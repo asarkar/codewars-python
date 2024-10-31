@@ -298,3 +298,133 @@ def test_path_finder(maze: list[str], expected: int) -> None:
 )
 def test_count_change(money: int, coins: list[int], expected: int) -> None:
     assert four.count_change(money, coins) == expected
+
+
+@pytest.mark.parametrize(
+    "start, end, expected",
+    [
+        ("a1", "c1", 2),
+        ("a1", "f1", 3),
+        ("a1", "f3", 3),
+        ("a1", "f4", 4),
+        ("a1", "f7", 5),
+        ("d4", "f4", 2),
+        ("f3", "g7", 3),
+        ("g4", "c6", 2),
+        ("g3", "a7", 4),
+        ("e7", "b1", 3),
+    ],
+)
+def test_knight(start: str, end: str, expected: int) -> None:
+    assert four.knight(start, end) == expected
+
+
+# fmt: off
+@pytest.mark.parametrize(
+    "lst, expected",
+    [
+        ([9], 9),
+        ([6, 9, 21], 9),
+        ([1, 21, 55], 3),
+        ([4, 8, 8], 12),
+        ([3, 1, 2, 3, 1], 5),
+        ([60, 12, 24, 48, 60, 24, 72, 36, 72, 72, 48], 132),
+        (
+            [
+                2, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 2, 1, 1,
+                1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1,
+                1, 2, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1
+             ],
+            78
+        ),
+        ([30, 12], 12),
+        ([3, 13, 23, 7, 83], 5),
+        (
+            [
+                109561, 66564, 84681, 136161, 210681, 133956, 59536, 82944, 35344,
+                102400, 119025, 224676, 154449, 4624, 40401, 124609, 32400
+            ],
+            17
+        ),
+        ([4, 16, 24], 12),
+    ],
+)
+def test_smallest_sum(lst: list[int], expected: int) -> None:
+    assert four.smallest_sum(lst) == expected
+# fmt: on
+
+
+@pytest.mark.parametrize(
+    "n, expected",
+    [
+        (0, {""}),
+        (1, {"()"}),
+        (2, {"(())", "()()"}),
+        (3, {"((()))", "(()())", "(())()", "()(())", "()()()"}),
+    ],
+)
+def test_balanced_parens(n: int, expected: set[str]) -> None:
+    assert set(four.balanced_parens(n)) == expected
+
+
+def test_find_word() -> None:
+    board = [
+        ["E", "A", "R", "A"],
+        ["N", "L", "E", "C"],
+        ["I", "A", "I", "S"],
+        ["B", "Y", "O", "R"],
+    ]
+    assert four.find_word(board, "C")
+    assert four.find_word(board, "EAR")
+    assert not four.find_word(board, "EARS")
+    assert four.find_word(board, "BAILER")
+    assert four.find_word(board, "RSCAREIOYBAILNEA")
+    assert not four.find_word(board, "CEREAL")
+    assert not four.find_word(board, "ROBES")
+
+
+@pytest.mark.parametrize(
+    "s, expected",
+    [
+        ("abc", "bac"),
+        ("abcd", "bdca"),
+        ("abcdx", "cbxda"),
+        ("abcdxg", "cxgdba"),
+        ("abcdxgz", "dczxgba"),
+        ("rexoqvzwmdlfghjbtuiyanskpc", "mzyxwvutsrqponlkjihgfedcba"),
+        ("rexoqvzwmdlfghjbtuiyanskpc", "mzyxwvutsrqponlkjihgfedcba"),
+        ("oibhtyvfskpjwzqxgmdceanrl", "mlzyxwvtsrqponkjihgfedcba"),
+    ],
+)
+def test_middle_permutation(s: str, expected: str) -> None:
+    assert four.middle_permutation(s) == expected
+
+
+@pytest.mark.parametrize(
+    "this, that, expected",
+    [
+        ([1, 1, 1], [2, 2, 2], True),
+        ([1, [1, 1]], [2, [2, 2]], True),
+        ([1, [1, 1]], [[2, 2], 2], False),
+        ([1, [1, 1]], [[2], 2], False),
+        ([[[], []]], [[[], []]], True),
+        ([[[], []]], [[1, 1]], False),
+        ([1, "[", "]"], ["[", "]", 1], True),
+    ],
+)
+def test_same_structure_as(
+    this: four.RecursiveList, that: four.RecursiveList, expected: bool
+) -> None:
+    assert four.same_structure_as(this, that) == expected
+
+
+@pytest.mark.parametrize(
+    "left, right, expected",
+    [
+        (5, 7, 7),
+        (12, 29, 51),
+        (4, 7, 8),
+    ],
+)
+def test_count_ones(left: int, right: int, expected: int) -> None:
+    assert four.count_ones(left, right) == expected

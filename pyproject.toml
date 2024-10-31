@@ -1,7 +1,5 @@
-[tool.pytest.ini_options]
-
-#[tool.ruff]
-#line-length = 120
+[project]
+requires-python = ">= 3.12"
 
 [tool.mypy]
 # https://mypy.readthedocs.io/en/stable/command_line.html#cmdoption-mypy-exclude
