@@ -29,10 +29,7 @@ while (( $# > 0 )); do
    esac
 done
 
-bin_dir=""
-if [[ "$OSTYPE" == "darwin"* ]]; then
-	bin_dir="./venv/bin/"
-fi
+bin_dir="$PWD/venv/bin/"
 
 basedir="${1:-.}"
 
@@ -48,5 +45,5 @@ if (( no_lint == 0 )); then
     "$bin_dir"ruff check "$basedir"
     "$bin_dir"ruff format --check "$basedir"
   fi
-  "$bin_dir"mypy --explicit-package-bases "$basedir" --strict
+  "$bin_dir"mypy "$basedir" --strict
 fi

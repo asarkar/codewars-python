@@ -1,7 +1,9 @@
+from collections.abc import Callable
+from typing import Any
+
 import pytest
-from _pytest.fixtures import FixtureRequest
-from typing import Any, Callable
 import six
+from _pytest.fixtures import FixtureRequest
 
 
 @pytest.fixture
@@ -32,13 +34,12 @@ def data_loader(request: FixtureRequest) -> Callable[[str], list[Any]]:
         (" . ", "E"),
         ("   .   . ", "E E"),
         (
-            "      ...---... -.-.--   - .... .   --.- ..- .. -.-. -.-   -... .-. --- .-- -.   ..-. --- -..-   .--- ..- -- .--. ...   --- ...- . .-.   - .... .   .-.. .- --.. -.--   -.. --- --. .-.-.-  ",
+            "      ...---... -.-.--   - .... .   --.- ..- .. -.-. -.-   -... .-. --- .-- -.   ..-. --- -..-   "
+            + ".--- ..- -- .--. ...   --- ...- . .-.   - .... .   .-.. .- --.. -.--   -.. --- --. .-.-.-  ",
             "SOS! THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG.",
         ),
     ],
 )
-def test_decode_morse(
-    data_loader: Callable[[str], list[Any]], code: str, expected: str
-) -> None:
+def test_decode_morse(data_loader: Callable[[str], list[Any]], code: str, expected: str) -> None:
     table, *x = data_loader("morse.txt")
     assert six.decode_morse(code, table) == expected

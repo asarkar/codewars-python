@@ -1,6 +1,6 @@
+import four
 import pytest
 from _pytest.fixtures import FixtureRequest
-import four
 
 
 @pytest.mark.parametrize(
@@ -412,9 +412,7 @@ def test_middle_permutation(s: str, expected: str) -> None:
         ([1, "[", "]"], ["[", "]", 1], True),
     ],
 )
-def test_same_structure_as(
-    this: four.RecursiveList, that: four.RecursiveList, expected: bool
-) -> None:
+def test_same_structure_as(this: four.RecursiveList, that: four.RecursiveList, expected: bool) -> None:
     assert four.same_structure_as(this, that) == expected
 
 

@@ -1,4 +1,5 @@
 import itertools
+
 import numpy as np
 from numpy.typing import NDArray
 
@@ -69,11 +70,7 @@ def diag(board: NDArray[np.bytes_], d: int) -> bytes | None:
 
 def find_winner(board: NDArray[np.bytes_]) -> str | None:
     match next(
-        (
-            w
-            for f, i in itertools.product((axis, diag), (0, 1))
-            if (w := f(board, i)) is not None
-        ),
+        (w for f, i in itertools.product((axis, diag), (0, 1)) if (w := f(board, i)) is not None),
         None,
     ):
         case b"Y":

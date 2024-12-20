@@ -1,9 +1,47 @@
 [project]
 requires-python = ">= 3.12"
+name = "codewars-python"
+version = "0.0.1"
+dependencies = [
+  "numpy",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+]
+lint = [
+    "ruff",
+    "mypy",
+]
+
+[tool.setuptools]
+py-modules = []
 
 [tool.mypy]
 # https://mypy.readthedocs.io/en/stable/command_line.html#cmdoption-mypy-exclude
 exclude = [
-    'venv'
+    'venv',
 ]
-ignore_errors = 'False'
+ignore_errors = false
+warn_return_any = true
+disallow_untyped_defs = true
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+]

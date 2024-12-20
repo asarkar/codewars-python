@@ -2,7 +2,7 @@ import functools
 import heapq
 import itertools
 import math
-from collections import deque, defaultdict
+from collections import defaultdict, deque
 from typing import Any
 
 import numpy as np
@@ -168,14 +168,10 @@ def next_bigger(n: int) -> int:
         n, digit = divmod(n, 10)
         digits.appendleft(digit)
 
-    lo = next(
-        (x for x in range(len(digits) - 1, 0, -1) if digits[x] > digits[x - 1]), 0
-    )
+    lo = next((x for x in range(len(digits) - 1, 0, -1) if digits[x] > digits[x - 1]), 0)
 
     if lo > 0:
-        i = next(
-            x for x in range(len(digits) - 1, lo - 1, -1) if digits[x] > digits[lo - 1]
-        )
+        i = next(x for x in range(len(digits) - 1, lo - 1, -1) if digits[x] > digits[lo - 1])
         digits[lo - 1], digits[i] = digits[i], digits[lo - 1]
     else:
         return -1
@@ -421,14 +417,10 @@ def next_smaller(n: int) -> int:
         n, digit = divmod(n, 10)
         digits.appendleft(digit)
 
-    lo = next(
-        (x for x in range(len(digits) - 1, 0, -1) if digits[x] < digits[x - 1]), 0
-    )
+    lo = next((x for x in range(len(digits) - 1, 0, -1) if digits[x] < digits[x - 1]), 0)
 
     if lo > 0:
-        i = next(
-            x for x in range(len(digits) - 1, lo - 1, -1) if digits[x] < digits[lo - 1]
-        )
+        i = next(x for x in range(len(digits) - 1, lo - 1, -1) if digits[x] < digits[lo - 1])
         digits[lo - 1], digits[i] = digits[i], digits[lo - 1]
     else:
         return -1
@@ -524,16 +516,14 @@ def path_finder(maze: str) -> int:
                 dist[(row, col)] = d + 1
                 to_visit.append((row, col))
 
-    return dist[end] if end in dist else 0
+    return dist.get(end, 0)
 
 
 # Alternative implementation using A* search and a heuristic of Manhattan distance + current distance.
 def path_finder2(maze: str) -> int:
     grid = [list(row) for row in maze.splitlines()]
     n = len(grid)
-    to_visit: list[tuple[int, int, tuple[int, int]]] = [
-        (0, 0, (0, 0))
-    ]  # (heuristic, dist, (r, c))
+    to_visit: list[tuple[int, int, tuple[int, int]]] = [(0, 0, (0, 0))]  # (heuristic, dist, (r, c))
     moves = ((0, 1), (0, -1), (1, 0), (-1, 0))
     end = (n - 1, n - 1)
     x = sum(end)
@@ -636,10 +626,7 @@ def knight(p1: str, p2: str) -> int:
             if (
                 0 <= nxt_row < n
                 and 0 <= nxt_col < n
-                and (
-                    (nxt_row, nxt_col) not in steps
-                    or next_step < steps[(nxt_row, nxt_col)]
-                )
+                and ((nxt_row, nxt_col) not in steps or next_step < steps[(nxt_row, nxt_col)])
             ):
                 steps[(nxt_row, nxt_col)] = next_step
                 heuristic = (abs(end[0] - nxt_row) + abs(end[1] - nxt_col)) // 3
@@ -789,9 +776,7 @@ type RecursiveList = Any | list[RecursiveList]
 # that has the same nesting structures and same corresponding length of nested arrays as the first array.
 def same_structure_as(this: RecursiveList, that: RecursiveList) -> bool:
     if isinstance(this, list) and isinstance(that, list):
-        return len(this) == len(that) and all(
-            same_structure_as(x, y) for x, y in zip(this, that)
-        )
+        return len(this) == len(that) and all(same_structure_as(x, y) for x, y in zip(this, that, strict=False))
     return not isinstance(this, list) and not isinstance(that, list)
 
 

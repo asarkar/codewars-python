@@ -1,7 +1,7 @@
-import operator
-from dataclasses import dataclass, field
-from typing import Callable
 import itertools
+import operator
+from collections.abc import Callable
+from dataclasses import dataclass, field
 
 
 # Vigenère Cipher Helper

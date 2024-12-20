@@ -35,7 +35,5 @@ def decode_morse(morse_code: str, MORSE_CODE: dict[str, str]) -> str:
         if word in MORSE_CODE:
             msg.append(MORSE_CODE[word])
         else:
-            msg.append(
-                "".join((MORSE_CODE[c] for c in word.split(" ") if c in MORSE_CODE))
-            )
+            msg.append("".join(MORSE_CODE[c] for c in word.split(" ") if c in MORSE_CODE))
     return " ".join(msg)

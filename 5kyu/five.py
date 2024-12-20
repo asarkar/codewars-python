@@ -98,7 +98,8 @@ def _transmission_rate(bits: str) -> int:
 #
 # For example, the message HEY JUDE, that is ···· · −·−−   ·−−− ··− −·· · may be received as follows:
 #
-# 1100110011001100000011000000111111001100111111001111110000000000000011001111110011111100111111000000110011001111110000001111110011001100000011
+# 11001100110011000000110000001111110011001111110011111100000000000000110
+# 01111110011111100111111000000110011001111110000001111110011001100000011
 #
 # As you may see, this transmission is perfectly accurate according to the standard, and the hardware
 # sampled the line exactly two times per "dot".
@@ -129,9 +130,5 @@ def decode_bits(bits: str) -> str:
         "0" * rate * 7: " " * 3,
     }
 
-    msg = (
-        mapping[x]
-        for m in re.finditer("1+|0+", cleaned)
-        if (x := m.group(0)) in mapping
-    )
+    msg = (mapping[x] for m in re.finditer("1+|0+", cleaned) if (x := m.group(0)) in mapping)
     return "".join(msg).strip()

@@ -1,5 +1,5 @@
-import pytest
 import connect_four
+import pytest
 
 
 # fmt: off

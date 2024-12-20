@@ -155,24 +155,14 @@ def are_clues_satisfied(digits: Digits, clues: CluePair) -> bool:
 
 # Inspired by https://github.com/norvig/pytudes/blob/main/ipynb/Sudoku.ipynb.
 def search(grid: Grid, row_clues: Clues, col_clues: Clues) -> Soln | None:
-    rows = [
-        tuple(next(iter(grid[c])) for c in row(r) if len(grid[c]) == 1)
-        for r in range(n)
-    ]
+    rows = [tuple(next(iter(grid[c])) for c in row(r) if len(grid[c]) == 1) for r in range(n)]
     # Check all completed rows satisfy the given clues.
-    if not all(
-        are_clues_satisfied(r, row_clues[i]) for i, r in enumerate(rows) if len(r) == n
-    ):
+    if not all(are_clues_satisfied(r, row_clues[i]) for i, r in enumerate(rows) if len(r) == n):
         return None
 
-    cols = [
-        tuple(next(iter(grid[r])) for r in col(c) if len(grid[r]) == 1)
-        for c in range(n)
-    ]
+    cols = [tuple(next(iter(grid[r])) for r in col(c) if len(grid[r]) == 1) for c in range(n)]
     # Check all completed columns satisfy the given clues.
-    if not all(
-        are_clues_satisfied(c, col_clues[i]) for i, c in enumerate(cols) if len(c) == n
-    ):
+    if not all(are_clues_satisfied(c, col_clues[i]) for i, c in enumerate(cols) if len(c) == n):
         return None
     # Find the square with the minimum number of possibilities.
     s = min(
@@ -186,9 +176,7 @@ def search(grid: Grid, row_clues: Clues, col_clues: Clues) -> Soln | None:
 
     for d in grid[s]:
         # Try filling square s with digit d and see if it leads to a solution.
-        if (g := fill(copy.deepcopy(grid), s, d)) is not None and (
-            soln := search(g, row_clues, col_clues)
-        ) is not None:
+        if (g := fill(copy.deepcopy(grid), s, d)) is not None and (soln := search(g, row_clues, col_clues)) is not None:
             return soln
     return None
 
@@ -229,31 +217,22 @@ def solve_puzzle(clues: Digits) -> Soln | None:
         result: list[list[set[Digit]]] = []
         for clue, rev_clue in clues:
             cs = clue_to_candidates[clue] & rev_clue_to_candidates[rev_clue]
-            result.append([set(c) for c in zip(*cs)])
+            result.append([set(c) for c in zip(*cs, strict=False)])
         return result
 
     m = n * n
     # Clues are given in a clockwise manner around the n x n grid, pair them.
-    batched_clues = [
-        clues[i : i + n] if i < 2 * n else clues[i + n - 1 : i - 1 : -1]
-        for i in range(0, m - n + 1, n)
-    ]
-    row_clues = tuple(zip(batched_clues[3], batched_clues[1]))
-    col_clues = tuple(zip(batched_clues[0], batched_clues[2]))
+    batched_clues = [clues[i : i + n] if i < 2 * n else clues[i + n - 1 : i - 1 : -1] for i in range(0, m - n + 1, n)]
+    row_clues = tuple(zip(batched_clues[3], batched_clues[1], strict=False))
+    col_clues = tuple(zip(batched_clues[0], batched_clues[2], strict=False))
 
     # Find the candidates (heights of the skyscrapers that may be placed at each square)
     # row by row.
-    row_candidates = {
-        (r, c): cs
-        for r, cols in enumerate(candidates(row_clues))
-        for c, cs in enumerate(cols)
-    }
+    row_candidates = {(r, c): cs for r, cols in enumerate(candidates(row_clues)) for c, cs in enumerate(cols)}
 
     # Create the grid by intersecting the column-wise candidates with the row-wise candidates.
     grid = {
-        (r, c): cs & row_candidates[(r, c)]
-        for c, rows in enumerate(candidates(col_clues))
-        for r, cs in enumerate(rows)
+        (r, c): cs & row_candidates[(r, c)] for c, rows in enumerate(candidates(col_clues)) for r, cs in enumerate(rows)
     }
 
     return search(grid, row_clues, col_clues)
