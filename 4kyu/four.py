@@ -152,14 +152,17 @@ def solution(nums: list[int]) -> str:
 # 111 ==> -1
 # 531 ==> -1
 #
-# ANSWER: Since a descending sequence is already at its largest value, we can't get the next larger sequence from it.
-# We therefore find the first ascending pair a[i] > a[i-1] from the end, and swap a[i-1] with the smallest possible
-# value on the right that is larger than it. Since a[i-1] has been increased in value, the sequence a[i:] must be
-# set to its smallest value to give the smallest next larger sequence, which is given by the ascending order.
-# Furthermore, since we swapped a[i-1] with the smallest possible value on the right, say a[j], all elements in
-# sequence a[j+1:] are smaller than a[i-1], and all elements in the sequence a[i:j] are larger than a[i-1].
-# Thus, the sequence a[i:] is in descending order, and can be made ascending by using two pointers to swap
-# elements from both ends.
+# ANSWER: We observe that for any given sequence that is in descending order, no next larger
+# permutation is possible.
+# We find the first pair a[i] > a[i-1] from the end; this is the first ascending pair.
+# We swap a[i-1] with the last value on the right that is larger than it.
+# Since we swapped a[i-1] with, say a[j], all elements in sequence a[j+1:] are smaller than a[i-1],
+# and all elements in the sequence a[i:j] are larger than a[i-1]. Furthermore, Each element in the
+# sequence a[i-1:] is greater than the one on its right, otherwise we'd have found it while scanning
+# for a[i] > a[i-1]. Swapping a[i-1] and a[j] didn't change that order.
+#
+# Thus, the sequence a[i:] is in descending order, and can be made ascending by using two pointers
+# to swap elements from both ends.
 #
 # Time Complexity: O(n).
 def next_bigger(n: int) -> int:
